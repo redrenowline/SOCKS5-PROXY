@@ -49,17 +49,6 @@ public class Socks5Proxy implements Runnable {
         this.host = host;
     }
 
-    void debug(String text, ByteBuffer b) {
-//        var ar = b.array();
-//        StringBuilder s = new StringBuilder(text);
-//        s.append(": ");
-//        int to = b.remaining() == 0 ? b.position() : b.remaining();
-//        to = Math.min(to, 1000);
-//        for (var i = 0; i < to; i++) {
-//            s.append(String.format(" %02x", ar[i]));
-//        }
-//        log.info(s.toString());
-    }
 
     @Override
     public void run() {
@@ -171,7 +160,6 @@ public class Socks5Proxy implements Runnable {
             }
             // We know second send, so proxy bytes
             else {
-                debug("Read", attachment.in);
                 attachment.peer.interestOps(attachment.peer.interestOps() | SelectionKey.OP_WRITE);
                 key.interestOps(key.interestOps() ^ SelectionKey.OP_READ);
                 attachment.in.flip();
@@ -325,7 +313,6 @@ public class Socks5Proxy implements Runnable {
         if (attachment.type == Type.DNS_WRITE) {
             var channel = ((DatagramChannel) key.channel());
 
-            debug("DNS request", attachment.out);
 
             if (channel.write(attachment.out) == -1) {
                 close(key);
@@ -339,7 +326,6 @@ public class Socks5Proxy implements Runnable {
         } else {
             var channel = ((SocketChannel) key.channel());
 
-            debug("Write", attachment.out);
 
             if (channel.write(attachment.out) == -1) {
                 close(key);
